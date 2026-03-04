@@ -5,20 +5,11 @@ require_once("../db/sql/tasksql.php");
 
 header("Content-Type: application/json");
 
-$input = json_decode(file_get_contents("php://input"), true);
-
-// Überprüfen, ob Daten vorhanden sind
-if (empty($input)) {
-    http_response_code(400);
-    echo json_encode(["error" => "Keine Daten empfangen."]);
-    exit;
-}
-
 // Daten extrahieren
-$id_task = isset($input["id"]) ? $input["id"] : 0;
+$tasks = [];
 
 try{
-    $task = SelectTaskById($id_task);
+    $tasks = SelectTasks();
 
     // Wandelt jedes Task-Objekt in ein Array um
     $tasksArray = array_map(function($task) {
@@ -28,11 +19,11 @@ try{
             'description' => $task->getDescription(),
             'complete' => $task->getComplete(),
         ];
-    }, $task);
+    }, $tasks);
 
     // Serialisiere das Array zu JSON
     echo json_encode([
-        "task" => $tasksArray,
+        "tasks" => $tasksArray,
         "success" => "Daten erfolgreich zurückgeliefert"
     ]);
 } catch(Exception $e){

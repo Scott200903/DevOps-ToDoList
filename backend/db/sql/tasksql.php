@@ -1,7 +1,7 @@
 <?php
 
-require_once("../connect.php");
-require_once("../../classes/taskclass.php");
+include_once(__DIR__ . '/../connect.php');
+include_once(__DIR__ . '/../../classes/taskclass.php');
 
 function InsertTask(Task $t)
 {
@@ -48,6 +48,7 @@ function SelectTaskById($id)
         while ($rows = $result->fetch_assoc()) {
             $task = new Task();
 
+            $task->setId($rows['id']);
             $task->setCategory($rows['category']);
             $task->setDescription($rows['description']);
             $task->setComplete($rows['complete']);
@@ -64,10 +65,6 @@ function SelectTasks()
 {
     $tasks = [];
 
-    if (!isset($id)) {
-        return 0;
-    }
-
     $conn = connectDB();
     $stmt = $conn->prepare("SELECT * FROM task;");
 
@@ -79,6 +76,7 @@ function SelectTasks()
         while ($rows = $result->fetch_assoc()) {
             $task = new Task();
 
+            $task->setId($rows['id']);
             $task->setCategory($rows['category']);
             $task->setDescription($rows['description']);
             $task->setComplete($rows['complete']);
@@ -90,7 +88,6 @@ function SelectTasks()
     $conn->close();
     return $tasks;
 }
-
 
 function DeleteTask($id)
 {
