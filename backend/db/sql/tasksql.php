@@ -91,10 +91,6 @@ function SelectTasks()
 
 function DeleteTask($id)
 {
-    if (!isset($t)) {
-        return 0;
-    }
-
     $conn = connectDB();
 
     $task = SelectTaskById($id);
