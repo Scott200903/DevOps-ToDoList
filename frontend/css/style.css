@@ -166,10 +166,20 @@ h1 {
 
 .task-status-cell {
     text-align: center;
+    width: 100px;
 }
 
 .task-actions-cell {
     text-align: center;
+    width: 120px;
+}
+
+/* ensure header columns match the same widths */
+.task-header .header-status {
+    width: 100px;
+}
+.task-header .header-actions {
+    width: 120px;
 }
 
 .task-status {
