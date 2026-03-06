@@ -66,7 +66,7 @@ function SelectTasks()
     $tasks = [];
 
     $conn = connectDB();
-    $stmt = $conn->prepare("SELECT * FROM task;");
+    $stmt = $conn->prepare("SELECT * FROM task ORDER BY category ASC;");
 
     $stmt->execute();
 
