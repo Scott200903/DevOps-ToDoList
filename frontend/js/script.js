@@ -1,4 +1,4 @@
-const API_BASE = 'http://devopstodo/DevOps-ToDoList-develop/DevOps-ToDoList-develop/backend/api';
+const API_BASE = 'http://devopstodo/backend/api';
 
 // Globale Variable zum Speichern der Task-ID für Bearbeitung
 let editingTaskId = null;
