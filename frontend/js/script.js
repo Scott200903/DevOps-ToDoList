@@ -1,5 +1,5 @@
-const API_BASE = 'http://devopstodo/backend/api';
 // const API_BASE = 'http://devopstodo/DevOps-ToDoList-develop/DevOps-ToDoList-develop/backend/api';
+const API_BASE = 'http://devopstodo/backend/api';
 
 // Globale Variable zum Speichern der Task-ID für Bearbeitung
 let editingTaskId = null;
@@ -82,10 +82,6 @@ function displayTasks(tasks) {
         taskElement.className = `task ${task.complete ? 'complete' : ''}`;
         taskElement.id = `task-${task.id}`;
 
-        // Content Container
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'task-content';
-
         // Category
         const categoryElement = document.createElement('span');
         categoryElement.className = 'task-category';
@@ -95,9 +91,6 @@ function displayTasks(tasks) {
         const descriptionElement = document.createElement('span');
         descriptionElement.className = 'task-description';
         descriptionElement.textContent = task.description;
-
-        contentDiv.appendChild(categoryElement);
-        contentDiv.appendChild(descriptionElement);
 
         // Status (clickable zum ändern)
         const statusElement = document.createElement('span');
@@ -126,7 +119,8 @@ function displayTasks(tasks) {
         actionsDiv.appendChild(editButton);
         actionsDiv.appendChild(deleteButton);
 
-        taskElement.appendChild(contentDiv);
+        taskElement.appendChild(categoryElement);
+        taskElement.appendChild(descriptionElement);
         taskElement.appendChild(statusElement);
         taskElement.appendChild(actionsDiv);
 
@@ -262,10 +256,25 @@ function setupModalEvents() {
     const closeBtn = document.querySelector('.close');
     const saveBtn = document.getElementById('save-button');
     const cancelBtn = document.getElementById('cancel-button');
+    const editCategoryInput = document.getElementById('edit-category');
+    const editDescriptionInput = document.getElementById('edit-description');
     
     closeBtn.addEventListener('click', closeEditModal);
     cancelBtn.addEventListener('click', closeEditModal);
     saveBtn.addEventListener('click', saveEditedTask);
+    
+    // Enter-Taste zum Speichern im Modal
+    editCategoryInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            saveEditedTask();
+        }
+    });
+    
+    editDescriptionInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            saveEditedTask();
+        }
+    });
     
     // Modal schließen bei Klick außerhalb
     window.addEventListener('click', function(e) {

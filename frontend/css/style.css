@@ -10,7 +10,9 @@ body {
 }
 
 .container {
-    max-width: 700px;
+    max-width: none;
+    width: fit-content;
+    min-width: 700px;
     margin: 0 auto;
     background: #fff;
     padding: 20px;
@@ -80,7 +82,6 @@ h1 {
 
 .task-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 12px;
     background-color: #34495e;
@@ -90,28 +91,32 @@ h1 {
     gap: 10px;
 }
 
-.task-header-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-grow: 1;
-}
-
 .header-category {
-    min-width: 100px;
+    min-width: 120px;
+    flex-shrink: 0;
+    text-align: left;
 }
 
 .header-description {
-    flex-grow: 1;
+    min-width: 200px;
+    flex: 1;
+    text-align: left;
 }
 
-.task-header-actions {
-    width: auto;
+.header-status {
+    min-width: 100px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.header-actions {
+    min-width: 120px;
+    flex-shrink: 0;
+    text-align: center;
 }
 
 .task {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 15px 12px;
     border-bottom: 1px solid #eee;
@@ -122,13 +127,6 @@ h1 {
 
 .task:hover {
     background-color: #f9f9f9;
-}
-
-.task-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-grow: 1;
 }
 
 .task.complete {
@@ -142,23 +140,28 @@ h1 {
 }
 
 .task-category {
+    min-width: 120px;
+    flex-shrink: 0;
     font-weight: bold;
     color: #555;
-    min-width: 100px;
+    white-space: nowrap;
 }
 
 .task-description {
-    flex-grow: 1;
+    min-width: 200px;
+    flex: 1;
     color: #333;
+    white-space: nowrap;
 }
 
 .task-status {
+    min-width: 100px;
+    flex-shrink: 0;
     padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
     font-weight: bold;
-    min-width: 75px;
     text-align: center;
     transition: all 0.3s;
     user-select: none;
@@ -175,7 +178,10 @@ h1 {
 }
 
 .task-actions {
+    min-width: 120px;
+    flex-shrink: 0;
     display: flex;
+    justify-content: center;
     gap: 8px;
 }
 

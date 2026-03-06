@@ -22,11 +22,10 @@
 
         <!-- Task-Liste Header -->
         <div class="task-header">
-            <div class="task-header-content">
-                <span class="header-category">Kategorie</span>
-                <span class="header-description">Aufgabe</span>
-            </div>
-            <div class="task-header-actions"></div>
+            <span class="header-category">Kategorie</span>
+            <span class="header-description">Aufgabe</span>
+            <span class="header-status">Status</span>
+            <span class="header-actions">Aktionen</span>
         </div>
 
         <!-- Task-Liste -->
