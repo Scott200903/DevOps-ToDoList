@@ -11,7 +11,7 @@
     <div id="notification-container" class="notification-container"></div>
     
     <div class="container">
-        <h1>DevOps ToDo-Liste</h1>
+        <h1>DevOps ToDo-Li<span id="trigger-s">s</span>te</h1>
         
         <!-- Eingabebereich für neue Tasks -->
         <div class="add-task-container">

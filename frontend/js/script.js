@@ -92,6 +92,7 @@ function showConfirmation(message, callback) {
 document.addEventListener('DOMContentLoaded', function() {
     loadTasks();
     setupEventListeners();
+    setupScottEffect();
 });
 
 // Event Listener für alle Eingaben und Buttons
@@ -449,4 +450,61 @@ function saveEditedTask() {
         console.error('Fehler beim Aktualisieren der Aufgabe:', error);
         showNotification('Fehler beim Aktualisieren der Aufgabe', 'error');
     });
+}
+
+// Scott easter egg functionality
+let scottTimer = null;
+let scottElem = null;
+let scottInterval = null;
+
+function setupScottEffect() {
+    const trigger = document.getElementById('trigger-s');
+    if (!trigger) return;
+    trigger.addEventListener('mouseenter', startScottTimer);
+    trigger.addEventListener('mouseleave', cancelScott);
+}
+
+function startScottTimer() {
+    scottTimer = setTimeout(() => {
+        showScott();
+    }, 5000);
+}
+
+function cancelScott() {
+    if (scottTimer) {
+        clearTimeout(scottTimer);
+        scottTimer = null;
+    }
+    removeScott();
+}
+
+function showScott() {
+    if (scottElem) return;
+    scottElem = document.createElement('div');
+    scottElem.className = 'scott';
+    scottElem.textContent = 'Scottyboiii';
+    document.body.appendChild(scottElem);
+    // move Scottyboiii once every half second for slower travel
+    scottInterval = setInterval(moveScott, 500);
+}
+
+function removeScott() {
+    if (scottInterval) {
+        clearInterval(scottInterval);
+        scottInterval = null;
+    }
+    if (scottElem) {
+        scottElem.remove();
+        scottElem = null;
+    }
+}
+
+function moveScott() {
+    if (!scottElem) return;
+    const w = window.innerWidth - scottElem.offsetWidth;
+    const h = window.innerHeight - scottElem.offsetHeight;
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    scottElem.style.left = x + 'px';
+    scottElem.style.top = y + 'px';
 }

@@ -10,9 +10,9 @@ body {
 }
 
 .container {
-    max-width: none;
-    width: fit-content;
-    min-width: 700px;
+    max-width: 100%;
+    width: 100%;
+    /* remove minimum width to allow shrinking */
     margin: 0 auto;
     background: #fff;
     padding: 20px;
@@ -20,6 +20,28 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     overflow-x: auto;
 }
+
+/* ensure table fills available space but can shrink */
+.task-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: auto;
+}
+
+/* allow table cells to wrap text on small screens */
+.task-category, .task-description {
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+/* reduce padding on very narrow displays */
+@media (max-width: 600px) {
+    .task-table th, .task-table td {
+        padding: 8px 6px;
+        font-size: 14px;
+    }
+}
+
 
 h1 {
     text-align: center;
@@ -398,4 +420,32 @@ tr.complete .edit-button:hover {
 
 .notification-close:hover {
     opacity: 1;
+}
+
+/* Scott easter egg */
+.scott {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 32px;
+    font-weight: bold;
+    pointer-events: none;
+    animation: rainbow 12s linear infinite, spin 4s linear infinite;
+    white-space: nowrap;
+}
+
+@keyframes rainbow {
+    0%{color:red;}
+    14%{color:orange;}
+    28%{color:yellow;}
+    42%{color:green;}
+    56%{color:blue;}
+    70%{color:indigo;}
+    84%{color:violet;}
+    100%{color:red;}
+}
+
+@keyframes spin {
+    from{transform: rotate(0deg);}
+    to{transform: rotate(360deg);}
 }
