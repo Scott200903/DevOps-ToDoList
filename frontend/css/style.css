@@ -18,6 +18,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
 }
 
 h1 {
@@ -75,88 +76,81 @@ h1 {
     cursor: not-allowed;
 }
 
-/* Task List */
-#task-list {
+/* Task Table */
+.task-table {
+    width: auto;
+    min-width: 100%;
+    border-collapse: collapse;
     margin-top: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    table-layout: auto;
 }
 
-.task-header {
-    display: flex;
-    align-items: center;
-    padding: 12px;
+.task-table thead {
     background-color: #34495e;
     color: white;
+}
+
+.task-header th {
+    padding: 12px;
     font-weight: bold;
-    border-radius: 4px 4px 0 0;
-    gap: 10px;
-}
-
-.header-category {
-    min-width: 120px;
-    flex-shrink: 0;
     text-align: left;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
 }
 
-.header-description {
-    min-width: 200px;
-    flex: 1;
-    text-align: left;
+.task-header .header-description {
+    max-width: 400px;
+    word-wrap: break-word;
 }
 
-.header-status {
-    min-width: 100px;
-    flex-shrink: 0;
-    text-align: center;
-}
-
-.header-actions {
-    min-width: 120px;
-    flex-shrink: 0;
-    text-align: center;
-}
-
-.task {
-    display: flex;
-    align-items: center;
-    padding: 15px 12px;
+.task-table tbody tr {
     border-bottom: 1px solid #eee;
-    gap: 10px;
     transition: background-color 0.2s;
-    margin-bottom: 8px;
 }
 
-.task:hover {
+.task-table tbody tr:hover {
     background-color: #f9f9f9;
 }
 
-.task.complete {
+.task-table tbody tr.complete {
     opacity: 0.6;
 }
 
-.task.complete .task-category,
-.task.complete .task-description {
+.task-table tbody tr.complete .task-category,
+.task-table tbody tr.complete .task-description {
     text-decoration: line-through;
     color: #888;
 }
 
+.task-table td {
+    padding: 15px 12px;
+    vertical-align: middle;
+}
+
 .task-category {
-    min-width: 120px;
-    flex-shrink: 0;
     font-weight: bold;
     color: #555;
     white-space: nowrap;
 }
 
 .task-description {
-    min-width: 200px;
-    flex: 1;
     color: #333;
-    white-space: nowrap;
+    word-wrap: break-word;
+    max-width: 400px;
+}
+
+.task-status-cell {
+    text-align: center;
+}
+
+.task-actions-cell {
+    text-align: center;
 }
 
 .task-status {
-    min-width: 100px;
-    flex-shrink: 0;
     padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
@@ -165,6 +159,7 @@ h1 {
     text-align: center;
     transition: all 0.3s;
     user-select: none;
+    display: inline-block;
 }
 
 .task-status.complete {
@@ -178,8 +173,6 @@ h1 {
 }
 
 .task-actions {
-    min-width: 120px;
-    flex-shrink: 0;
     display: flex;
     justify-content: center;
     gap: 8px;
@@ -202,6 +195,18 @@ h1 {
 
 .edit-button {
     color: #3498db;
+}
+
+/* Disabled edit icon when task is completed */
+.edit-button.disabled,
+tr.complete .edit-button {
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.edit-button.disabled:hover,
+tr.complete .edit-button:hover {
+    background-color: transparent;
 }
 
 .delete-button {

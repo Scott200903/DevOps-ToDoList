@@ -157,34 +157,39 @@ function displayTasks(tasks) {
     const taskListElement = document.getElementById('task-list');
     
     if (!tasks || tasks.length === 0) {
-        taskListElement.innerHTML = '<p style="text-align: center; color: #999;">Keine Aufgaben vorhanden</p>';
+        taskListElement.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999; padding: 20px;">Keine Aufgaben vorhanden</td></tr>';
         return;
     }
     
     taskListElement.innerHTML = '';
 
     tasks.forEach(task => {
-        const taskElement = document.createElement('div');
-        taskElement.className = `task ${task.complete ? 'complete' : ''}`;
-        taskElement.id = `task-${task.id}`;
+        const taskRow = document.createElement('tr');
+        taskRow.className = `task ${task.complete ? 'complete' : ''}`;
+        taskRow.id = `task-${task.id}`;
 
-        // Category
-        const categoryElement = document.createElement('span');
-        categoryElement.className = 'task-category';
-        categoryElement.textContent = task.category;
+        // Category Cell
+        const categoryCell = document.createElement('td');
+        categoryCell.className = 'task-category';
+        categoryCell.textContent = task.category;
 
-        // Description
-        const descriptionElement = document.createElement('span');
-        descriptionElement.className = 'task-description';
-        descriptionElement.textContent = task.description;
+        // Description Cell
+        const descriptionCell = document.createElement('td');
+        descriptionCell.className = 'task-description';
+        descriptionCell.textContent = task.description;
 
-        // Status (clickable zum ändern)
+        // Status Cell (clickable zum ändern)
+        const statusCell = document.createElement('td');
+        statusCell.className = 'task-status-cell';
         const statusElement = document.createElement('span');
         statusElement.className = `task-status ${task.complete ? 'complete' : 'incomplete'}`;
         statusElement.textContent = task.complete ? 'Erledigt' : 'Offen';
         statusElement.addEventListener('click', () => toggleTaskStatus(task.id, task.complete));
+        statusCell.appendChild(statusElement);
 
-        // Actions Container
+        // Actions Cell
+        const actionsCell = document.createElement('td');
+        actionsCell.className = 'task-actions-cell';
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'task-actions';
 
@@ -193,7 +198,13 @@ function displayTasks(tasks) {
         editButton.className = 'edit-button';
         editButton.innerHTML = '<i class="fas fa-pencil"></i>';
         editButton.title = 'Bearbeiten';
-        editButton.addEventListener('click', () => openEditModal(task));
+        if (task.complete) {
+            // disable editing for completed tasks
+            editButton.disabled = true;
+            editButton.classList.add('disabled');
+        } else {
+            editButton.addEventListener('click', () => openEditModal(task));
+        }
 
         // Delete Button
         const deleteButton = document.createElement('button');
@@ -204,13 +215,14 @@ function displayTasks(tasks) {
 
         actionsDiv.appendChild(editButton);
         actionsDiv.appendChild(deleteButton);
+        actionsCell.appendChild(actionsDiv);
 
-        taskElement.appendChild(categoryElement);
-        taskElement.appendChild(descriptionElement);
-        taskElement.appendChild(statusElement);
-        taskElement.appendChild(actionsDiv);
+        taskRow.appendChild(categoryCell);
+        taskRow.appendChild(descriptionCell);
+        taskRow.appendChild(statusCell);
+        taskRow.appendChild(actionsCell);
 
-        taskListElement.appendChild(taskElement);
+        taskListElement.appendChild(taskRow);
     });
 }
 

@@ -22,16 +22,20 @@
             </button>
         </div>
 
-        <!-- Task-Liste Header -->
-        <div class="task-header">
-            <span class="header-category">Kategorie</span>
-            <span class="header-description">Aufgabe</span>
-            <span class="header-status">Status</span>
-            <span class="header-actions">Aktionen</span>
-        </div>
-
-        <!-- Task-Liste -->
-        <div id="task-list"></div>
+        <!-- Task-Liste Tabelle -->
+        <table id="task-table" class="task-table">
+            <thead>
+                <tr class="task-header">
+                    <th class="header-category">Kategorie</th>
+                    <th class="header-description">Aufgabe</th>
+                    <th class="header-status">Status</th>
+                    <th class="header-actions">Aktionen</th>
+                </tr>
+            </thead>
+            <tbody id="task-list">
+                <!-- Tasks werden hier dynamisch eingefügt -->
+            </tbody>
+        </table>
 
         <!-- Modal für Bearbeitung -->
         <div id="edit-modal" class="modal">
