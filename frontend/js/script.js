@@ -1,8 +1,92 @@
-// const API_BASE = 'http://devopstodo/DevOps-ToDoList-develop/DevOps-ToDoList-develop/backend/api';
-const API_BASE = 'http://devopstodo/backend/api';
+const API_BASE = 'http://devopstodo/DevOps-ToDoList-develop/DevOps-ToDoList-develop/backend/api';
+// const API_BASE = 'http://devopstodo/backend/api';
 
 // Globale Variable zum Speichern der Task-ID für Bearbeitung
 let editingTaskId = null;
+
+// Benachrichtigungsfunktion
+function showNotification(message, type = 'error', duration = 4000) {
+    const container = document.getElementById('notification-container');
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    let icon = '⚠️';
+    if (type === 'error') {
+        icon = '❌';
+    } else if (type === 'success') {
+        icon = '✅';
+    } else if (type === 'warning') {
+        icon = '⚠️';
+    }
+    
+    notification.innerHTML = `
+        <span class="notification-icon">${icon}</span>
+        <span class="notification-message">${message}</span>
+        <button class="notification-close">&times;</button>
+    `;
+    
+    const closeBtn = notification.querySelector('.notification-close');
+    closeBtn.addEventListener('click', () => {
+        notification.classList.add('exit');
+        setTimeout(() => notification.remove(), 300);
+    });
+    
+    container.appendChild(notification);
+    
+    // Automatisch entfernen nach duration
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.classList.add('exit');
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, duration);
+}
+
+// Confirmation Dialog
+function showConfirmation(message, callback) {
+    const container = document.getElementById('notification-container');
+    
+    const confirmation = document.createElement('div');
+    confirmation.className = 'modal show';
+    confirmation.innerHTML = `
+        <div class="modal-content" style="margin-top: 100px; max-width: 350px;">
+            <h2>Bestätigung</h2>
+            <div id="confirmation-message" style="margin: 15px 0; color: #333; font-size: 15px;"></div>
+            <div class="modal-buttons">
+                <button id="confirm-yes" style="background-color: #e74c3c; color: white;">Ja, löschen</button>
+                <button id="confirm-no" style="background-color: #95a5a6; color: white;">Abbrechen</button>
+            </div>
+        </div>
+    `;
+    
+    // Nachricht mit HTML-Support einfügen
+    const messageDiv = confirmation.querySelector('#confirmation-message');
+    messageDiv.innerHTML = message;
+    
+    document.body.appendChild(confirmation);
+    
+    const yesBtn = confirmation.querySelector('#confirm-yes');
+    const noBtn = confirmation.querySelector('#confirm-no');
+    
+    yesBtn.addEventListener('click', () => {
+        confirmation.remove();
+        callback(true);
+    });
+    
+    noBtn.addEventListener('click', () => {
+        confirmation.remove();
+        callback(false);
+    });
+    
+    // Modal schließen bei Klick außerhalb
+    confirmation.addEventListener('click', function(e) {
+        if (e.target === confirmation) {
+            confirmation.remove();
+            callback(false);
+        }
+    });
+}
 
 // Beim Laden der Seite initialisieren
 document.addEventListener('DOMContentLoaded', function() {
@@ -59,10 +143,12 @@ function loadTasks() {
                 displayTasks(data.tasks);
             } else {
                 console.error('Fehler beim Laden der Aufgaben:', data);
+                showNotification('Fehler beim Laden der Aufgaben', 'error');
             }
         })
         .catch(error => {
             console.error('Fehler beim Abrufen der Aufgaben:', error);
+            showNotification('Fehler beim Abrufen der Aufgaben. Bitte versuchen Sie es später erneut.', 'error');
         });
 }
 
@@ -114,7 +200,7 @@ function displayTasks(tasks) {
         deleteButton.className = 'delete-button';
         deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
         deleteButton.title = 'Löschen';
-        deleteButton.addEventListener('click', () => deleteTask(task.id));
+        deleteButton.addEventListener('click', () => deleteTask(task.id, task.category, task.description));
 
         actionsDiv.appendChild(editButton);
         actionsDiv.appendChild(deleteButton);
@@ -137,7 +223,7 @@ function addTask() {
     const description = descriptionInput.value.trim();
     
     if (!category || !description) {
-        alert('Bitte füllen Sie beide Felder aus');
+        showNotification('Bitte füllen Sie beide Felder aus', 'warning');
         return;
     }
     
@@ -169,49 +255,54 @@ function addTask() {
             
             // Tasks neu laden
             loadTasks();
+            showNotification('Aufgabe erfolgreich hinzugefügt', 'success');
         } else {
-            alert('Fehler beim Hinzufügen der Aufgabe: ' + (data.error || 'Unbekannter Fehler'));
+            showNotification('Fehler beim Hinzufügen der Aufgabe: ' + (data.error || 'Unbekannter Fehler'), 'error');
         }
     })
     .catch(error => {
         console.error('Fehler beim Hinzufügen der Aufgabe:', error);
-        alert('Ein Fehler ist aufgetreten');
+        showNotification('Fehler beim Hinzufügen der Aufgabe', 'error');
     });
 }
 
 // API CALL 3: deleteTask - Task löschen
-function deleteTask(taskId) {
-    if (!confirm('Möchten Sie diese Aufgabe wirklich löschen?')) {
-        return;
-    }
-    
-    const deleteData = {
-        id: taskId
-    };
-    
-    fetch(`${API_BASE}/deletetask.php`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(deleteData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Netzwerkantwort war nicht ok');
+function deleteTask(taskId, category, description) {
+    const message = `Möchten Sie diese Aufgabe wirklich löschen?\n\n<strong>${category}</strong>\n${description}`;
+    showConfirmation(message, function(confirmed) {
+        if (!confirmed) {
+            return;
         }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            loadTasks();
-        } else {
-            alert('Fehler beim Löschen: ' + (data.error || 'Unbekannter Fehler'));
-        }
-    })
-    .catch(error => {
-        console.error('Fehler beim Löschen der Aufgabe:', error);
-        alert('Ein Fehler ist aufgetreten');
+        
+        const deleteData = {
+            id: taskId
+        };
+        
+        fetch(`${API_BASE}/deletetask.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(deleteData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Netzwerkantwort war nicht ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                loadTasks();
+                showNotification('Aufgabe erfolgreich gelöscht', 'success');
+            } else {
+                showNotification('Fehler beim Löschen: ' + (data.error || 'Unbekannter Fehler'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Fehler beim Löschen der Aufgabe:', error);
+            showNotification('Fehler beim Löschen der Aufgabe', 'error');
+        });
     });
 }
 
@@ -240,13 +331,14 @@ function toggleTaskStatus(taskId, currentComplete) {
     .then(data => {
         if (data.success) {
             loadTasks();
+            showNotification('Status aktualisiert', 'success');
         } else {
-            alert('Fehler beim Aktualisieren: ' + (data.error || 'Unbekannter Fehler'));
+            showNotification('Fehler beim Aktualisieren: ' + (data.error || 'Unbekannter Fehler'), 'error');
         }
     })
     .catch(error => {
         console.error('Fehler beim Aktualisieren des Status:', error);
-        alert('Ein Fehler ist aufgetreten');
+        showNotification('Fehler beim Aktualisieren des Status', 'error');
     });
 }
 
@@ -308,7 +400,7 @@ function saveEditedTask() {
     const description = document.getElementById('edit-description').value.trim();
     
     if (!category || !description) {
-        alert('Bitte füllen Sie beide Felder aus');
+        showNotification('Bitte füllen Sie beide Felder aus', 'warning');
         return;
     }
     
@@ -336,12 +428,13 @@ function saveEditedTask() {
         if (data.success) {
             closeEditModal();
             loadTasks();
+            showNotification('Aufgabe erfolgreich aktualisiert', 'success');
         } else {
-            alert('Fehler beim Aktualisieren: ' + (data.error || 'Unbekannter Fehler'));
+            showNotification('Fehler beim Aktualisieren: ' + (data.error || 'Unbekannter Fehler'), 'error');
         }
     })
     .catch(error => {
         console.error('Fehler beim Aktualisieren der Aufgabe:', error);
-        alert('Ein Fehler ist aufgetreten');
+        showNotification('Fehler beim Aktualisieren der Aufgabe', 'error');
     });
 }

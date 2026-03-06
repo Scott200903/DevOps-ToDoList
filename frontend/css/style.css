@@ -300,3 +300,97 @@ h1 {
 #cancel-button:hover {
     background-color: #7f8c8d;
 }
+
+/* Benachrichtigungen */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+.notification {
+    padding: 16px 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideIn 0.3s ease-out;
+    font-weight: 500;
+    position: relative;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.notification.exit {
+    animation: slideOut 0.3s ease-out;
+}
+
+.notification.error {
+    background-color: #ffe5e5;
+    color: #c92a2a;
+    border-left: 4px solid #e74c3c;
+}
+
+.notification.success {
+    background-color: #e5f8e5;
+    color: #27ae60;
+    border-left: 4px solid #2ecc71;
+}
+
+.notification.warning {
+    background-color: #fff3e0;
+    color: #f39c12;
+    border-left: 4px solid #f39c12;
+}
+
+.notification-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.notification-message {
+    flex: 1;
+    font-size: 14px;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    font-size: 18px;
+    flex-shrink: 0;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
