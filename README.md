@@ -130,3 +130,24 @@ Keine (auth: none)
 {
   "id": 2
 }
+```
+
+
+
+### Erklärung der Datentypen und Eigenschaften:
+- **`id` (INT)**:
+  - **Primary Key**: Ja, dient als eindeutige Identifikation jeder Aufgabe.
+  - **NULL erlaubt**: Nein, da jede Aufgabe eine ID benötigt.
+  - **Auto-Increment**: Wird automatisch erhöht, um neue Aufgaben zu nummerieren.
+
+- **`category` (VARCHAR)**:
+  - **Datentyp**: Zeichenkette mit variabler Länge (max. 80 Zeichen).
+  - **NULL erlaubt**: Ja, falls eine Aufgabe keiner Kategorie zugeordnet werden soll.
+
+- **`description` (VARCHAR)**:
+  - **Datentyp**: Zeichenkette mit variabler Länge (max. 100 Zeichen).
+  - **NULL erlaubt**: Ja, falls eine Aufgabe keine Beschreibung hat.
+
+- **`complete` (BIT)**:
+  - **Datentyp**: Boolean-Wert (`0` für "offen", `1` für "erledigt").
+  - **NULL erlaubt**: Nein, da der Status immer definiert sein muss.
