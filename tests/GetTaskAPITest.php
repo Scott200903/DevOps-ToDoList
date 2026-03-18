@@ -1,9 +1,9 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-class TaskApiTest extends TestCase
+class GetTaskAPITest extends TestCase
 {
-    private $apiUrl = "http://devopstodo/backend/api/gettasks.php"; // Anpassen!
+    private $apiUrl = __DIR__ . "/../backend/api/gettask.php"; // Anpassen!
 
     public function testGetTaskByIdSuccess()
     {
