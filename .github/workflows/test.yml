@@ -1,0 +1,58 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Definiere den MySQL-Service für den Workflow
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: geheim_1
+          MYSQL_DATABASE: todolist
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      # 1. Checkout des Repository-Inhalts
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. PHP einrichten (mit benötigten Erweiterungen)
+      - name: PHP einrichten
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'  # oder deine PHP-Version
+          extensions: mbstring, curl, json, mysql, pdo_mysql
+
+      # 3. Composer installieren und Abhängigkeiten laden
+      - name: Abhängigkeiten installieren
+        run: |
+          composer install
+          composer require --dev phpunit/phpunit  # Falls noch nicht in composer.json
+
+      # 4. Test-Datenbank einrichten (Tabellen und Testdaten erstellen)
+      - name: Test-Datenbank einrichten
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS todolist;"
+          mysql -h 127.0.0.1 -uroot -proot todolist < database/Initial-DB.sql
+
+      # 5. Umgebungsvariablen für die API setzen (z. B. DB-Zugang)
+      - name: Umgebungsvariablen für Tests setzen
+        run: |
+          echo "DB_HOST=127.0.0.1" >> $GITHUB_ENV
+          echo "DB_USER=root" >> $GITHUB_ENV
+          echo "DB_PASSWORD=geheim_1" >> $GITHUB_ENV
+          echo "DB_NAME=todolist" >> $GITHUB_ENV
+
+      # 6. API-Tests ausführen
+      - name: Tests ausführen
+        run: composer test
