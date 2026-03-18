@@ -35,9 +35,13 @@ jobs:
 
       # 3. Composer installieren und Abhängigkeiten laden
       - name: Abhängigkeiten installieren
-        run: |
-          composer install
-          composer require --dev phpunit/phpunit  # Falls noch nicht in composer.json
+        run: composer install
+
+      - name: Berechtigungen für PHPUnit setzen
+        run: chmod +x ./vendor/bin/phpunit
+
+      - name: Composer-Bin-Ordner zum PATH hinzufügen
+        run: echo "$(pwd)/vendor/bin" >> $GITHUB_PATH
 
       # 4. Test-Datenbank einrichten (Tabellen und Testdaten erstellen)
       - name: Test-Datenbank einrichten
@@ -63,4 +67,4 @@ jobs:
 
       # 6. API-Tests ausführen
       - name: Tests ausführen
-        run: composer test
+        run: phpunit tests
