@@ -43,8 +43,8 @@ jobs:
       - name: Test-Datenbank einrichten
         run: |
           if [ -f "database/Initial-DB.sql" ]; then
-            mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS test_db;"
-            mysql -h 127.0.0.1 -uroot -proot test_db < database/Initial-DB.sql
+            mysql -h 127.0.0.1 -uroot -pgeheim_1 -e "CREATE DATABASE IF NOT EXISTS todolist;"
+            mysql -h 127.0.0.1 -uroot -pgeheim_1 todolist < database/Initial-DB.sql
           else
             echo "Fehler: database/Initial-DB.sql nicht gefunden!"
             exit 1
