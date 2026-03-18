@@ -65,6 +65,14 @@ jobs:
           echo "DB_PASSWORD=geheim_1" >> $GITHUB_ENV
           echo "DB_NAME=todolist" >> $GITHUB_ENV
 
+
+
       # 6. API-Tests ausführen
+      - name: Lokale API starten
+        run: php -S localhost:8000 -t backend/api/ &
+
+      - name: Warten, bis die API bereit ist
+        run: sleep 3
+
       - name: Tests ausführen
         run: phpunit tests
