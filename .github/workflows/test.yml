@@ -42,8 +42,7 @@ jobs:
       # 4. Test-Datenbank einrichten (Tabellen und Testdaten erstellen)
       - name: Test-Datenbank einrichten
         run: |
-          mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS todolist;"
-          mysql -h 127.0.0.1 -uroot -proot todolist < database/Initial-DB.sql
+          mysql -h 127.0.0.1 -u root -p geheim_1 todolist < database/Initial-DB.sql
 
       # 5. Umgebungsvariablen für die API setzen (z. B. DB-Zugang)
       - name: Umgebungsvariablen für Tests setzen
