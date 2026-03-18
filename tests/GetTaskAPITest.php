@@ -13,7 +13,7 @@ class GetTaskAPITest extends TestCase
 
     public function testGetTaskByIdSuccess()
     {
-        $testId = 1; // ID eines existierenden Tasks in der Test-DB
+        $testId = 13; // ID eines existierenden Tasks in der Test-DB
 
         echo "API-URL: " . $this->apiUrl . "\n";
         $response = $this->callApi($testId);
