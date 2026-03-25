@@ -75,4 +75,4 @@ jobs:
         run: sleep 3
 
       - name: Tests ausführen
-        run: phpunit tests
+        run: ./vendor/bin/phpunit tests
