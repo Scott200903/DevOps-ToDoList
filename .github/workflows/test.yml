@@ -61,6 +61,7 @@ jobs:
           echo "DB_USER=root" >> $GITHUB_ENV
           echo "DB_PASSWORD=geheim_1" >> $GITHUB_ENV
           echo "DB_NAME=todolist" >> $GITHUB_ENV
+          echo "API_PORT=8000" >> $GITHUB_ENV
 
 
 
