@@ -3,104 +3,97 @@
 include_once(__DIR__ . '/../connect.php');
 include_once(__DIR__ . '/../../classes/taskclass.php');
 
-function InsertTask(Task $t)
+function InsertTask(Task $t): int
 {
-    if (!isset($t)) {
-        return 0;
-    }
-
     $conn = connectDB();
 
     $stmt = $conn->prepare("INSERT INTO task(category, description, complete) VALUES (?,?,?)");
+    if (!$stmt) {
+        throw new RuntimeException("Prepare fehlgeschlagen: " . $conn->error);
+    }
 
-    $cate = $t->getCategory();
-    $desc = $t->getDescription();
+    $cate  = $t->getCategory();
+    $desc  = $t->getDescription();
     $compl = $t->getComplete();
 
     $stmt->bind_param("ssi", $cate, $desc, $compl);
-
     $stmt->execute();
 
-    $lastinserted = $stmt->insert_id;
+    $lastInserted = $stmt->insert_id;
     $stmt->close();
     $conn->close();
 
-    return $lastinserted;
+    return $lastInserted;
 }
-function SelectTaskById($id)
+
+function SelectTaskById(int $id): array
 {
     $tasks = [];
 
-    if (!isset($id)) {
-        return 0;
-    }
-
     $conn = connectDB();
-    $stmt = $conn->prepare("SELECT * FROM task WHERE id = ?;");
+    $stmt = $conn->prepare("SELECT * FROM task WHERE id = ?");
+    if (!$stmt) {
+        throw new RuntimeException("Prepare fehlgeschlagen: " . $conn->error);
+    }
 
     $stmt->bind_param("i", $id);
-
     $stmt->execute();
 
     $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        while ($rows = $result->fetch_assoc()) {
-            $task = new Task();
-
-            $task->setId($rows['id']);
-            $task->setCategory($rows['category']);
-            $task->setDescription($rows['description']);
-            $task->setComplete($rows['complete']);
-
-            $tasks[] = $task;
-        }
+    while ($row = $result->fetch_assoc()) {
+        $task = new Task();
+        $task->setId((int)$row['id']);
+        $task->setCategory((string)$row['category']);
+        $task->setDescription((string)$row['description']);
+        $task->setComplete((int)$row['complete']);
+        $tasks[] = $task;
     }
 
+    $stmt->close();
     $conn->close();
     return $tasks;
 }
 
-function SelectTasks()
+function SelectTasks(): array
 {
     $tasks = [];
 
     $conn = connectDB();
-    $stmt = $conn->prepare("SELECT * FROM task ORDER BY category ASC;");
+    $stmt = $conn->prepare("SELECT * FROM task ORDER BY category ASC");
+    if (!$stmt) {
+        throw new RuntimeException("Prepare fehlgeschlagen: " . $conn->error);
+    }
 
     $stmt->execute();
 
     $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        while ($rows = $result->fetch_assoc()) {
-            $task = new Task();
-
-            $task->setId($rows['id']);
-            $task->setCategory($rows['category']);
-            $task->setDescription($rows['description']);
-            $task->setComplete($rows['complete']);
-
-            $tasks[] = $task;
-        }
+    while ($row = $result->fetch_assoc()) {
+        $task = new Task();
+        $task->setId((int)$row['id']);
+        $task->setCategory((string)$row['category']);
+        $task->setDescription((string)$row['description']);
+        $task->setComplete((int)$row['complete']);
+        $tasks[] = $task;
     }
 
+    $stmt->close();
     $conn->close();
     return $tasks;
 }
 
-function DeleteTask($id)
+function DeleteTask(int $id): bool
 {
-    $conn = connectDB();
-
-    $task = SelectTaskById($id);
-
-    if (empty($task)) {
-        $conn->close();
+    $existing = SelectTaskById($id);
+    if (empty($existing)) {
         return false;
     }
 
-    $stmt = $conn->prepare("DELETE FROM task WHERE id = ?;");
+    $conn = connectDB();
+    $stmt = $conn->prepare("DELETE FROM task WHERE id = ?");
+    if (!$stmt) {
+        throw new RuntimeException("Prepare fehlgeschlagen: " . $conn->error);
+    }
+
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
@@ -109,23 +102,18 @@ function DeleteTask($id)
     return true;
 }
 
-function UpdateTask(Task $t)
+function UpdateTask(Task $t): bool
 {
-    if (!$t || !$t->getId()) {
-        return false;
+    $conn = connectDB();
+    $stmt = $conn->prepare("UPDATE task SET category = ?, description = ?, complete = ? WHERE id = ?");
+    if (!$stmt) {
+        throw new RuntimeException("Prepare fehlgeschlagen: " . $conn->error);
     }
 
-    $conn = connectDB();
-    $stmt = $conn->prepare("
-        UPDATE task
-        SET category = ?, description = ?, complete = ?
-        WHERE id = ?
-    ");
-
-    $cate = $t->getCategory();
-    $desc = $t->getDescription();
+    $cate  = $t->getCategory();
+    $desc  = $t->getDescription();
     $compl = $t->getComplete();
-    $id = $t->getId();
+    $id    = $t->getId();
 
     $stmt->bind_param("ssii", $cate, $desc, $compl, $id);
     $success = $stmt->execute();
@@ -135,20 +123,14 @@ function UpdateTask(Task $t)
     return $success;
 }
 
-/**
- * Toggelt den Complete-Status eines Tasks.
- * @param int $id ID des Tasks.
- * @param int $complete Neuer Complete-Status (0 oder 1).
- * @return bool True bei Erfolg, False bei Fehler.
- */
-function UpdateTaskComplete($id, $complete)
+function UpdateTaskComplete(int $id, int $complete): bool
 {
-    if (!isset($id) || !in_array($complete, [0, 1])) {
-        return false;
-    }
-
     $conn = connectDB();
     $stmt = $conn->prepare("UPDATE task SET complete = ? WHERE id = ?");
+    if (!$stmt) {
+        throw new RuntimeException("Prepare fehlgeschlagen: " . $conn->error);
+    }
+
     $stmt->bind_param("ii", $complete, $id);
     $success = $stmt->execute();
     $stmt->close();
