@@ -19,10 +19,15 @@ if (empty($input)) {
 $id_task = isset($input["id"]) ? $input["id"] : 0;
 
 try {
-    DeleteTask($id_task);
-    echo json_encode(["success" => "Task erfolgreich gelöscht."]);
+    $found = DeleteTask($id_task);
+    if ($found) {
+        echo json_encode(["success" => "Task erfolgreich gelöscht."]);
+    } else {
+        http_response_code(404);
+        echo json_encode(["error" => "Task nicht gefunden."]);
+    }
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(["error" => "Fehler beim Speichern: " . $e->getMessage()]);
+    echo json_encode(["error" => "Fehler beim Löschen: " . $e->getMessage()]);
 }
 

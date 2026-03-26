@@ -28,6 +28,6 @@ try{
     ]);
 } catch(Exception $e){
     http_response_code(500);
-    echo json_encode(["error" => "Fehler beim Speichern: " . $e->getMessage()]);
+    echo json_encode(["error" => "Fehler beim Abrufen: " . $e->getMessage()]);
 }
 

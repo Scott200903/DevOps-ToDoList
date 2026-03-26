@@ -10,7 +10,13 @@ use PHPUnit\Framework\TestCase;
  */
 class GetTaskAPITest extends TestCase
 {
-    private string $baseUrl = "http://localhost:8000";
+    private string $baseUrl = "";
+
+    protected function setUp(): void
+    {
+        $port = getenv('API_PORT') ?: "8080";
+        $this->baseUrl = "http://localhost:{$port}/backend/api";
+    }
 
     // -----------------------------------------------------------------------
     // Helper
@@ -39,7 +45,6 @@ class GetTaskAPITest extends TestCase
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         return ['httpCode' => $httpCode, 'body' => $response ?: ''];
     }
@@ -180,7 +185,6 @@ class GetTaskAPITest extends TestCase
 
     public function testUpdateTaskWithIdZeroFails(): void
     {
-        // ID 0 gilt als ungültig → failure-Key statt success
         $response = $this->request('/updatetask.php', 'POST', [
             'id'          => 0,
             'category'    => 'Test',
@@ -188,7 +192,7 @@ class GetTaskAPITest extends TestCase
             'complete'    => 0,
         ]);
 
-        $this->assertEquals(200, $response['httpCode']);
+        $this->assertEquals(400, $response['httpCode']);
 
         $data = json_decode($response['body'], true);
         $this->assertArrayHasKey('failure', $data);
@@ -231,7 +235,7 @@ class GetTaskAPITest extends TestCase
             'complete' => 1,
         ]);
 
-        $this->assertEquals(200, $response['httpCode']);
+        $this->assertEquals(400, $response['httpCode']);
 
         $data = json_decode($response['body'], true);
         $this->assertArrayHasKey('failure', $data);
@@ -282,6 +286,17 @@ class GetTaskAPITest extends TestCase
 
         $deleteData = json_decode($delete['body'], true);
         $this->assertArrayHasKey('success', $deleteData);
+    }
+
+    public function testDeleteTaskNotFound(): void
+    {
+        $response = $this->request('/deletetask.php', 'POST', ['id' => 9999]);
+
+        $this->assertEquals(404, $response['httpCode']);
+
+        $data = json_decode($response['body'], true);
+        $this->assertArrayHasKey('error', $data);
+        $this->assertEquals("Task nicht gefunden.", $data['error']);
     }
 
     public function testDeleteTaskMissingBody(): void

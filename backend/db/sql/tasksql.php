@@ -95,18 +95,18 @@ function DeleteTask($id)
 
     $task = SelectTaskById($id);
 
-    if (isset($task)) {
-        $stmt = $conn->prepare("DELETE FROM task WHERE id = ?;");
-
-        $stmt->bind_param("i", $id);
-
-        $stmt->execute();
-
-        $stmt->close();
+    if (empty($task)) {
+        $conn->close();
+        return false;
     }
 
+    $stmt = $conn->prepare("DELETE FROM task WHERE id = ?;");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->close();
     $conn->close();
-    return 1;
+
+    return true;
 }
 
 function UpdateTask(Task $t)

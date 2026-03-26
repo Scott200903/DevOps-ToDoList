@@ -54,9 +54,6 @@ jobs:
             exit 1
           fi
 
-      - name: Dateistruktur prüfen
-        run: ls -R
-
       # 5. Umgebungsvariablen für die API setzen (z. B. DB-Zugang)
       - name: Umgebungsvariablen für Tests setzen
         run: |
