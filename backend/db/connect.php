@@ -1,17 +1,16 @@
 <?php
 function connectDB(): mysqli
 {
-  $servername = "localhost";
-  $username = "root";
-  $password = "geheim_1";
-  $dbname = "todolist";
+    $servername = getenv('DB_HOST') ?: "localhost";
+    $username   = getenv('DB_USER') ?: "root";
+    $password   = getenv('DB_PASSWORD') ?: "geheim_1";
+    $dbname     = getenv('DB_NAME') ?: "todolist";
 
-  // Create connection
-  $conn = new mysqli($servername, $username, $password, $dbname);
-  // Check connection
-  if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-  }
-  return $conn;
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    if ($conn->connect_error) {
+        throw new RuntimeException("Datenbankverbindung fehlgeschlagen: " . $conn->connect_error);
+    }
+
+    return $conn;
 }
-?>

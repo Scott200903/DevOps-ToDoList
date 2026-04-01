@@ -33,6 +33,7 @@ try {
         echo json_encode(["success" => "Task updaten erfolgreich."]);
     }
     else{
+        http_response_code(400);
         echo json_encode(["failure" => "Task updaten fehlgeschlagen."]);
     }
 } catch (Exception $e) {

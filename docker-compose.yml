@@ -1,0 +1,50 @@
+services:
+
+  php:
+    build: ./docker/php
+    container_name: devops-todo-php
+    ports:
+      - "8080:80"       # Frontend/API erreichbar unter http://localhost:8080
+    volumes:
+      - .:/var/www/html  # gesamtes Projekt ins Webroot mounten
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: geheim_1
+      DB_NAME: todolist
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    container_name: devops-todo-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: geheim_1
+      MYSQL_DATABASE: todolist
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./database/Initial-DB.sql:/docker-entrypoint-initdb.d/init.sql  # beim ersten Start automatisch importiert
+      - mysql_data:/var/lib/mysql                                         # Daten bleiben beim Neustart erhalten
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: devops-todo-phpmyadmin
+    ports:
+      - "8081:80"       # phpMyAdmin erreichbar unter http://localhost:8081
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: geheim_1
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

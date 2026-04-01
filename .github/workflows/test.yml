@@ -1,0 +1,76 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Definiere den MySQL-Service für den Workflow
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: geheim_1
+          MYSQL_DATABASE: todolist
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      # 1. Checkout des Repository-Inhalts
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. PHP einrichten (mit benötigten Erweiterungen)
+      - name: PHP einrichten
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'  # oder deine PHP-Version
+          extensions: mbstring, curl, json, mysql, pdo_mysql
+
+      # 3. Composer installieren und Abhängigkeiten laden
+      - name: Abhängigkeiten installieren
+        run: composer install
+
+      - name: Berechtigungen für PHPUnit setzen
+        run: chmod +x ./vendor/bin/phpunit
+
+      - name: Composer-Bin-Ordner zum PATH hinzufügen
+        run: echo "$(pwd)/vendor/bin" >> $GITHUB_PATH
+
+      # 4. Test-Datenbank einrichten (Tabellen und Testdaten erstellen)
+      - name: Test-Datenbank einrichten
+        run: |
+          if [ -f "database/Initial-DB.sql" ]; then
+            mysql -h 127.0.0.1 -uroot -pgeheim_1 -e "CREATE DATABASE IF NOT EXISTS todolist;"
+            mysql -h 127.0.0.1 -uroot -pgeheim_1 todolist < database/Initial-DB.sql
+          else
+            echo "Fehler: database/Initial-DB.sql nicht gefunden!"
+            exit 1
+          fi
+
+      # 5. Umgebungsvariablen für die API setzen (z. B. DB-Zugang)
+      - name: Umgebungsvariablen für Tests setzen
+        run: |
+          echo "DB_HOST=127.0.0.1" >> $GITHUB_ENV
+          echo "DB_USER=root" >> $GITHUB_ENV
+          echo "DB_PASSWORD=geheim_1" >> $GITHUB_ENV
+          echo "DB_NAME=todolist" >> $GITHUB_ENV
+          echo "API_PORT=8000" >> $GITHUB_ENV
+
+
+
+      # 6. API-Tests ausführen
+      - name: Lokale API starten
+        run: php -S localhost:8000 &
+
+      - name: Warten, bis die API bereit ist
+        run: sleep 3
+
+      - name: Tests ausführen
+        run: ./vendor/bin/phpunit tests
