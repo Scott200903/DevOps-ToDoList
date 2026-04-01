@@ -67,7 +67,7 @@ jobs:
 
       # 6. API-Tests ausführen
       - name: Lokale API starten
-        run: php -S localhost:8000 -t ./backend/api/ &
+        run: php -S localhost:8000 &
 
       - name: Warten, bis die API bereit ist
         run: sleep 3
